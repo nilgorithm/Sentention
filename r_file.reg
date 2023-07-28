@@ -1,0 +1,15 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\MyProtocol]
+@="URL:MyProtocol"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\MyProtocol\DefaultIcon]
+@="\"C:\\Users\\KlychkovMD\\GUI\\Release\\net7.0-windows\\GUI.exe\",1"
+
+[HKEY_CLASSES_ROOT\MyProtocol\shell]
+
+[HKEY_CLASSES_ROOT\MyProtocol\shell\open]
+
+[HKEY_CLASSES_ROOT\MyProtocol\shell\open\command]
+@="\"C:\\Users\\KlychkovMD\\GUI\\Release\\net7.0-windows\\GUI.exe\" \"%l\""

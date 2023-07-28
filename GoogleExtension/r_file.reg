@@ -1,0 +1,15 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\CallProtocol]
+@="URL:CallProtocol"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\CallProtocol\DefaultIcon]
+@="\"C:\\Program Files (x86)\\MooxAgent\\v0.9.29\\x64\\nw.exe\",1 \"--nwapp=C:\\Program Files (x86)\\MooxAgent\\v0.9.29\""
+
+[HKEY_CLASSES_ROOT\CallProtocol\shell]
+
+[HKEY_CLASSES_ROOT\CallProtocol\shell\open]
+
+[HKEY_CLASSES_ROOT\CallProtocol\shell\open\command]
+@="\"C:\\Program Files (x86)\\MooxAgent\\v0.9.29\\x64\\nw.exe\" \"%l\" \"--nwapp=C:\\Program Files (x86)\\MooxAgent\\v0.9.29\""

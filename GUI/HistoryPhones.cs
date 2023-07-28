@@ -1,27 +1,29 @@
-﻿using System;
-using System.Diagnostics;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 
-namespace VisualiseTableProd
+namespace GUI
 {
-    public partial class Form1 : Form
+    public partial class HistoryPhones : Form
     {
-        public Form1(string[] args)
+        public HistoryPhones(string[] args)
         {
             string data = args[0].Split(':')[1];
             InitializeComponent();
             pictureBox1.Visible = true;
             this.StartPosition = FormStartPosition.Manual;
-            this.Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - this.Width, Screen.PrimaryScreen.WorkingArea.Height - this.Height);
+            this.Location = new Point(x: Screen.PrimaryScreen.WorkingArea.Width - this.Width, Screen.PrimaryScreen.WorkingArea.Height - this.Height);
             StartInitializeTasks(data);
+
         }
 
         private async void StartInitializeTasks(string args)
@@ -30,15 +32,16 @@ namespace VisualiseTableProd
             try
             {
                 await t0;
-                init(args);
+                Init(args);
                 pictureBox1.Visible = false;
-               
+
             }
             catch (Exception)
             {
                 MessageBox.Show("Ошибка подключения к базе данных MooxAgent.\nПроверьте наличие интернет-соединения и VPN.");
             }
         }
+
         private void openAsteriskConnection()
         {
             try
@@ -50,22 +53,8 @@ namespace VisualiseTableProd
                 MessageBox.Show("Ошибка подключения к базе данных MooxAgent.\nПроверьте наличие интернет-соединения и VPN.");
             }
         }
-        private DataTable GetData(string phone)
-        {
-            string SqlExpression = "SELECT calldate as 'Дата звонка', duration as 'Длит.', src as 'Кто звонил', dst as 'Кому звонил', cnam as 'ФИО', CONCAT('http://10.10.0.23:3000/download?filename=', uniqueid)  as 'Ссылка' FROM asteriskcdrdb.cdr WHERE year(calldate) >= 2022 and (src like '%@client%' or dst like '%@client%') order by calldate desc;"; //and(cnum = @manager or dst = @manager)
-            SqlExpression = SqlExpression.Replace("@client", phone);
-            MySqlDataAdapter AsteriskCallsAdapter = new MySqlDataAdapter(SqlExpression, connectionInfo.AsteriskConnection);
-            DataTable AsteriskCallsTable = new DataTable();
-            
-            AsteriskCallsAdapter.Fill(AsteriskCallsTable);
 
-            return AsteriskCallsTable;
-        }
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-        private void init(string phone)
+        private void Init(string phone)
         {
             DataGridViewLinkColumn dgvLink = new DataGridViewLinkColumn();
             dgvLink.DataPropertyName = "Ссылка";
@@ -78,25 +67,28 @@ namespace VisualiseTableProd
             dataGridView1.Columns[2].Width = 160;
             dataGridView1.Columns[3].Width = 160;
             dataGridView1.Columns[4].Width = 120;
-            
+
         }
 
-        private void Form1_Shown(Object sender, EventArgs e)
+        private DataTable GetData(string phone)
         {
+            string SqlExpression = "SELECT calldate as 'Дата звонка', duration as 'Длит.', src as 'Кто звонил', dst as 'Кому звонил', cnam as 'ФИО', CONCAT('http://10.10.0.23:3000/download?filename=', uniqueid)  as 'Ссылка' FROM asteriskcdrdb.cdr WHERE year(calldate) >= 2022 and (src like '%@client%' or dst like '%@client%') order by calldate desc;"; //and(cnum = @manager or dst = @manager)
+            SqlExpression = SqlExpression.Replace("@client", phone);
+            MySqlDataAdapter AsteriskCallsAdapter = new MySqlDataAdapter(SqlExpression, connectionInfo.AsteriskConnection);
+            DataTable AsteriskCallsTable = new DataTable();
 
+            AsteriskCallsAdapter.Fill(AsteriskCallsTable);
+
+            return AsteriskCallsTable;
         }
 
-        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (this.dataGridView1.Columns[e.ColumnIndex] is DataGridViewLinkColumn)
             {
-                Process.Start(this.dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString());          
+                _ = Process.Start(dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString());
             }
-        }
-
-        private void MooxCallsLoad_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

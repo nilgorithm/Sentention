@@ -1,37 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
-using System.IO;
+using System.Data;
+using System.Linq;
+using System.Text;
+using OpenNetFolder;
 
-
-
-
-namespace VisualiseTableProd
+namespace GUI
 {
-    public partial class Form2 : Form
+    public partial class SendDocs : Form
     {
+
         public static List<string> DocTypes = new List<string>();
         static Dictionary<string, string> IdMails = new Dictionary<string, string>();
         static Dictionary<string, List<string>> Contracts = new Dictionary<string, List<string>>();
         public static List<string> SelectedContracts = new List<string>();
         public static List<string> SelectedCompanies = new List<string>();
+        public static Dictionary<string, string> DocPaths = new Dictionary<string, string>();
         public static string entity;
-        
 
-        static string MaiL; 
+        static string MaiL;
 
-        public Form2(string[] arg)
-        //public Form2()
+        public SendDocs(string[] args)
         {
+            //InitializeComponent();
             //string[] arg = { "ll:/GPBL/_forms/read/page.aspx?create=False&etc=4212&id=584609E4-AA40-ED11-A3D4-00505601285E&theme=Outlook15White" };
-            entity = ParseInput(arg);//тут пушт арги энивей пихать бы пришлось
+            entity = ParseInput(args);
             InitializeComponent();
             this.StartPosition = FormStartPosition.Manual;
             OpenCRMConnection();
@@ -42,7 +40,7 @@ namespace VisualiseTableProd
         {
             string data = args[0].Split(':')[1];
             string pattern = @"(\w+\d+?[A-Z][^a-z%&_\/]+)";
-            
+
             //Regex rg = new Regex(pattern);
 
             Match m = Regex.Match(data, pattern);
@@ -71,6 +69,7 @@ namespace VisualiseTableProd
             //Если подключение не открывается, выводим ошибку
             catch
             {
+                //MessageBox.Show(connectionInfo.CRMConnectionString);
                 MessageBox.Show("Ошибка подключения к базе данных CRM.\nПроверьте наличие интернет-соединения и VPN.");
             }
         }
@@ -166,7 +165,6 @@ namespace VisualiseTableProd
             dataGridView1.Columns[1].Width = 110;
             dataGridView1.Columns[2].Width = 140;
         }
-        
 
         private async void button1_Click(object sender, EventArgs e)
         {
@@ -176,7 +174,7 @@ namespace VisualiseTableProd
             StringBuilder BuildMessage = new StringBuilder();
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                
+
                 bool isSelected = Convert.ToBoolean(row.Cells["checkBoxColumn"].Value);
                 if (isSelected)
                 {
@@ -185,13 +183,13 @@ namespace VisualiseTableProd
 
                     if (BuildMessage.ToString().Contains(IterCompany))
                     {
-                        BuildMessage.Append(IterContract+"; ");
+                        BuildMessage.Append(IterContract + "; ");
                     }
-                    else 
+                    else
                     {
-                        BuildMessage.Append(@"</B></b></H3><b></b>" + IterCompany + ": " + IterContract+"; ");
+                        BuildMessage.Append(@"</B></b></H3><b></b>" + IterCompany + ": " + IterContract + "; ");
                     }
-                    
+
 
                     SelectedContracts.Add(IterContract);
                     SelectedCompanies.Add(IterCompany);
@@ -207,11 +205,9 @@ namespace VisualiseTableProd
                 pictureBox1.Visible = true;
                 button1.Enabled = false;
 
-                string EnvPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString() + "\\files\\";
-                MailEvents.StartProcess($@"{EnvPath}\net\OpenNetFolder.exe", String.Join(" ", connectionInfo.NetFolderCredentials));
-                
-                await CreateDocumentRequest.MakeRequest(DocTypes, Contracts);
-                
+                await DiskConnection.Main(args: new string[1] { connectionInfo.NetFolderCredentials });
+                DocPaths = await CreateDocumentRequest.MakeRequest(DocTypes, Contracts);
+
 
                 pictureBox1.Visible = false;
 
@@ -219,7 +215,7 @@ namespace VisualiseTableProd
                 dataGridView1.DataSource = GetMails(ContractsIds);
                 dataGridView1.Columns[0].Width = 50;
                 dataGridView1.Columns[1].Width = 250;
-                
+
                 button2.Enabled = true;
             }
             else
@@ -244,8 +240,8 @@ namespace VisualiseTableProd
             //СhooseTypeOfDocuments.Controls.ForEach(ch => if ch.list.Add(ch));
 
             if (MailList.Count > 0)
-            {   
-                
+            {
+
                 button2.Enabled = false;
                 dataGridView1.Visible = false;
                 dataGridView1.DataSource = null;
@@ -274,14 +270,20 @@ namespace VisualiseTableProd
 
         private void button3_Click(object sender, EventArgs e)
         {
-            DocTypes = СhooseTypeOfDocuments.CheckedItems.Cast<string>().ToList();
+            DocTypes = DocsCheckList.CheckedItems.Cast<string>().ToList();
+            //DocTypes = new List<string> { "Акт-сверки" };
+
+            //List<string> selectedValues = checkedListBox1.Items.Cast<ListItem>().Where(li => li.Selected).Select(li => li.Value).ToList();
+            //MessageBox.Show(String.Join(" ", DocsCheckList.CheckedItems.Cast<string>().ToList()));
 
             if (DocTypes.Count > 0)
             {
                 MainLoad();
-                СhooseTypeOfDocuments.Visible = false;
+                DocsCheckList.Visible = false;
                 button3.Enabled = false;
                 button3.Visible = false;
+
+
             }
             else
             {
@@ -289,24 +291,5 @@ namespace VisualiseTableProd
             }
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-        private void Form2_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void СhooseTypeOfDocuments_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

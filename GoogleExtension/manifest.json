@@ -1,0 +1,23 @@
+{
+    "name":"SendPhone",
+    "version":"0.2",
+    "manifest_version":3,
+    "description":"gpbl_extension_for_chrome",
+ 
+    "content_scripts": [
+      {
+        "matches": ["http://crm.gpbl.ru/*"],
+        "js": ["content.js"],
+        "css": ["styles.css"],
+        "run_at": "document_end"
+      }
+    ],
+    "permissions":[
+        "contextMenus", 
+        "tabs"
+        ],
+    "icons":{
+        "16":"images/get_started16.png",
+        "128":"images/get_started128.png"
+    }
+}
