@@ -15,22 +15,24 @@ namespace GUI
     public partial class SendDocs : Form
     {
 
-        public static List<string> DocTypes = new List<string>();
+
         static Dictionary<string, string> IdMails = new Dictionary<string, string>();
         static Dictionary<string, List<string>> Contracts = new Dictionary<string, List<string>>();
-        public static List<string> SelectedContracts = new List<string>();
-        public static List<string> SelectedCompanies = new List<string>();
         public static Dictionary<string, string> DocPaths = new Dictionary<string, string>();
-        public static string entity;
 
+        static List<string> SelectedContracts = new List<string>();
+        static List<string> SelectedCompanies = new List<string>();
+        static List<string> DocTypes = new List<string>();
+
+        public static DateTime Date;
+        static string Entity;
         static string MaiL;
 
         public SendDocs(string[] args)
         {
-            //InitializeComponent();
-            //string[] arg = { "ll:/GPBL/_forms/read/page.aspx?create=False&etc=4212&id=584609E4-AA40-ED11-A3D4-00505601285E&theme=Outlook15White" };
-            entity = ParseInput(args);
+            Entity = ParseInput(args);
             InitializeComponent();
+            LbMonthCalendarShowSelected.Text = String.Format("Вы выбрали: {0}", DateTime.Now.ToLongDateString());
             this.StartPosition = FormStartPosition.Manual;
             OpenCRMConnection();
             this.Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - this.Width, Screen.PrimaryScreen.WorkingArea.Height - this.Height);
@@ -108,10 +110,11 @@ namespace GUI
 
             dataGridView1.Visible = true;
             button1.Enabled = true;
+            button1.Visible = true;
 
 
             string firstSqlExp = "select RegardingObjectId, EMailAddress1, EMailAddress2, EMailAddress3 from Task left join Account on Account.AccountId = Task.RegardingObjectId where leasing_taskdescriptionid = '0149E7CA-1424-EB11-A991-005056011895' and ActivityId = '@client'";
-            firstSqlExp = firstSqlExp.Replace("@client", entity);
+            firstSqlExp = firstSqlExp.Replace("@client", Entity);
             System.Data.SqlClient.SqlDataAdapter CRMfirstAdapter = new System.Data.SqlClient.SqlDataAdapter(firstSqlExp, connectionInfo.CRMConnection);
             DataTable RegardingObjId = new DataTable();
             try
@@ -204,6 +207,8 @@ namespace GUI
                 dataGridView1.Visible = false;
                 pictureBox1.Visible = true;
                 button1.Enabled = false;
+                button1.Visible = false;
+                button2.Visible = true;
 
                 await DiskConnection.Main(args: new string[1] { connectionInfo.NetFolderCredentials });
                 DocPaths = await CreateDocumentRequest.MakeRequest(DocTypes, Contracts);
@@ -271,6 +276,9 @@ namespace GUI
         private void button3_Click(object sender, EventArgs e)
         {
             DocTypes = DocsCheckList.CheckedItems.Cast<string>().ToList();
+            //Date = monthCalendar.SelectionStart.ToShortDateString();
+            Date = monthCalendar.SelectionStart;
+            //MessageBox.Show(Date.ToShortDateString());
             //DocTypes = new List<string> { "Акт-сверки" };
 
             //List<string> selectedValues = checkedListBox1.Items.Cast<ListItem>().Where(li => li.Selected).Select(li => li.Value).ToList();
@@ -278,10 +286,15 @@ namespace GUI
 
             if (DocTypes.Count > 0)
             {
-                MainLoad();
-                DocsCheckList.Visible = false;
                 button3.Enabled = false;
                 button3.Visible = false;
+                monthCalendar.Visible = false;
+                DocsCheckList.Visible = false;
+                LbDocsCheckListDescription.Visible = false;
+                LbDocsCheckListShowSelected.Visible = false;
+                LbMonthCalendarShowSelected.Visible = false;
+                LbMonthCalendardecription.Visible = false;
+                MainLoad();
 
 
             }
@@ -291,5 +304,15 @@ namespace GUI
             }
         }
 
+
+        private void monthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
+        {
+            LbMonthCalendarShowSelected.Text = String.Format("Вы выбрали: {0}", e.Start.ToLongDateString());
+        }
+
+        private void DocsCheckList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LbDocsCheckListShowSelected.Text = String.Format("Вы выбрали: {0}", String.Join(", ", DocsCheckList.CheckedItems.Cast<string>().ToList()));
+        }
     }
 }

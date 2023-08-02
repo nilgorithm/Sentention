@@ -13,6 +13,7 @@ namespace GUI
 {
     public class MailEvents
     {
+        // run terminal process
         public static void StartProcess(string ProcType, string ScriptArgs)
         {
 
@@ -36,6 +37,7 @@ namespace GUI
                 throw;
             }
         }
+        // check all files are in folder
         static bool AllExisted(List<string> searchFiles, string Fp)
         { 
             foreach (string file in searchFiles)
@@ -51,6 +53,7 @@ namespace GUI
             }
             return true;
         }
+        // prepair message send 
         async public static void SendMail(string Theme, string Body, string Recepient)
         {
             string FilesPath = connectionInfo.ProjEnv + "\\files\\";
@@ -61,23 +64,25 @@ namespace GUI
             foreach(KeyValuePair<string, string> kvp in SendDocs.DocPaths)
             {
                 string command = $@"/k copy ""\\dtc01-sp01.corp.gpbl.ru\DavWWWRoot{kvp.Value}"" ""{FilesPath}""";
-                StartProcess("cmd", command);
                 AllContractsPaths.Add(FilesPath + kvp.Key);
+                Task t1 = Task.Run(() => StartProcess("cmd", command));
+                t1.Wait();
+                
             }
             string ScriptArgs = $"\"{connectionInfo.ProjEnv}\\SendMail.vbs\" \"{Theme}\"  \"{Body}\" \"{Recepient}\" \"{String.Join(",", AllContractsPaths)}\"";
             //MessageBox.Show(ScriptArgs);
             var c = 0;
-            while (!AllExisted(SendDocs.DocPaths.Keys.ToList(), FilesPath) && c < 10)
+            while (!AllExisted(SendDocs.DocPaths.Keys.ToList(), FilesPath) && c < 100)
             {
                 c += 1;
                 Thread.Sleep(1000);
                 continue;
             }
             await DiskConnection.Main(args: new string[] { });
-            Task t1 = Task.Run(() => StartProcess(@"cscript", "//B " + ScriptArgs));
+            Task t2 = Task.Run(() => StartProcess(@"cscript", "//B " + ScriptArgs));
             try
             {
-                await t1;
+                await t2;
                 Application.Exit();
 
             }

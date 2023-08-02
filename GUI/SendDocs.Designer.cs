@@ -35,6 +35,11 @@
             button2 = new Button();
             button3 = new Button();
             pictureBox1 = new PictureBox();
+            LbDocsCheckListDescription = new Label();
+            LbMonthCalendarShowSelected = new Label();
+            LbDocsCheckListShowSelected = new Label();
+            LbMonthCalendardecription = new Label();
+            monthCalendar = new MonthCalendar();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -46,48 +51,52 @@
             dataGridView1.Location = new Point(0, 0);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowTemplate.Height = 25;
-            dataGridView1.Size = new Size(327, 259);
+            dataGridView1.Size = new Size(327, 247);
             dataGridView1.TabIndex = 0;
+            dataGridView1.Visible = false;
             // 
             // DocsCheckList
             // 
             DocsCheckList.CheckOnClick = true;
             DocsCheckList.FormattingEnabled = true;
             DocsCheckList.Items.AddRange(new object[] { "Акт-сверки", "Пени" });
-            DocsCheckList.Location = new Point(0, 0);
+            DocsCheckList.Location = new Point(0, 17);
             DocsCheckList.Name = "DocsCheckList";
-            DocsCheckList.Size = new Size(327, 274);
+            DocsCheckList.Size = new Size(327, 238);
             DocsCheckList.TabIndex = 1;
+            DocsCheckList.SelectedIndexChanged += DocsCheckList_SelectedIndexChanged;
             // 
             // button1
             // 
             button1.Enabled = false;
             button1.Location = new Point(354, 12);
             button1.Name = "button1";
-            button1.Size = new Size(85, 35);
+            button1.Size = new Size(85, 42);
             button1.TabIndex = 2;
-            button1.Text = "button1";
+            button1.Text = "Подтвердить выбор";
             button1.UseVisualStyleBackColor = true;
+            button1.Visible = false;
             button1.Click += button1_Click;
             // 
             // button2
             // 
             button2.Enabled = false;
-            button2.Location = new Point(354, 84);
+            button2.Location = new Point(354, 13);
             button2.Name = "button2";
-            button2.Size = new Size(85, 35);
+            button2.Size = new Size(85, 40);
             button2.TabIndex = 3;
-            button2.Text = "button2";
+            button2.Text = "Отправить";
             button2.UseVisualStyleBackColor = true;
+            button2.Visible = false;
             button2.Click += button2_Click;
             // 
             // button3
             // 
-            button3.Location = new Point(354, 158);
+            button3.Location = new Point(354, 11);
             button3.Name = "button3";
-            button3.Size = new Size(85, 35);
+            button3.Size = new Size(85, 43);
             button3.TabIndex = 4;
-            button3.Text = "button3";
+            button3.Text = "Подтвредить выбор";
             button3.UseVisualStyleBackColor = true;
             button3.Click += button3_Click;
             // 
@@ -101,11 +110,63 @@
             pictureBox1.TabStop = false;
             pictureBox1.Visible = false;
             // 
+            // LbDocsCheckListDescription
+            // 
+            LbDocsCheckListDescription.AutoSize = true;
+            LbDocsCheckListDescription.BackColor = Color.Transparent;
+            LbDocsCheckListDescription.Location = new Point(0, 0);
+            LbDocsCheckListDescription.Name = "LbDocsCheckListDescription";
+            LbDocsCheckListDescription.Size = new Size(231, 15);
+            LbDocsCheckListDescription.TabIndex = 7;
+            LbDocsCheckListDescription.Text = "Выберите тип рассылаемых документов";
+            // 
+            // LbMonthCalendarShowSelected
+            // 
+            LbMonthCalendarShowSelected.AutoSize = true;
+            LbMonthCalendarShowSelected.BackColor = Color.Transparent;
+            LbMonthCalendarShowSelected.Location = new Point(0, 258);
+            LbMonthCalendarShowSelected.Name = "LbMonthCalendarShowSelected";
+            LbMonthCalendarShowSelected.Size = new Size(78, 15);
+            LbMonthCalendarShowSelected.TabIndex = 9;
+            LbMonthCalendarShowSelected.Text = "Вы выбрали:";
+            // 
+            // LbDocsCheckListShowSelected
+            // 
+            LbDocsCheckListShowSelected.AutoSize = true;
+            LbDocsCheckListShowSelected.BackColor = Color.White;
+            LbDocsCheckListShowSelected.Location = new Point(0, 55);
+            LbDocsCheckListShowSelected.Name = "LbDocsCheckListShowSelected";
+            LbDocsCheckListShowSelected.Size = new Size(78, 15);
+            LbDocsCheckListShowSelected.TabIndex = 10;
+            LbDocsCheckListShowSelected.Text = "Вы выбрали:";
+            // 
+            // LbMonthCalendardecription
+            // 
+            LbMonthCalendardecription.AutoSize = true;
+            LbMonthCalendardecription.BackColor = SystemColors.Window;
+            LbMonthCalendardecription.Location = new Point(0, 81);
+            LbMonthCalendardecription.Name = "LbMonthCalendardecription";
+            LbMonthCalendardecription.Size = new Size(221, 15);
+            LbMonthCalendardecription.TabIndex = 7;
+            LbMonthCalendardecription.Text = "Выберит дату для загрузки документов";
+            // 
+            // monthCalendar
+            // 
+            monthCalendar.Location = new Point(0, 93);
+            monthCalendar.Name = "monthCalendar";
+            monthCalendar.TabIndex = 8;
+            monthCalendar.DateChanged += monthCalendar1_DateChanged;
+            // 
             // SendDocs
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(453, 259);
+            ClientSize = new Size(453, 284);
+            Controls.Add(LbMonthCalendardecription);
+            Controls.Add(LbDocsCheckListShowSelected);
+            Controls.Add(LbMonthCalendarShowSelected);
+            Controls.Add(monthCalendar);
+            Controls.Add(LbDocsCheckListDescription);
             Controls.Add(pictureBox1);
             Controls.Add(button3);
             Controls.Add(button2);
@@ -118,6 +179,7 @@
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -128,5 +190,11 @@
         private Button button2;
         private Button button3;
         private PictureBox pictureBox1;
+        private Label LbDocsCheckListDescription;
+        private Label label2;
+        private Label LbMonthCalendarShowSelected;
+        private Label LbDocsCheckListShowSelected;
+        private Label LbMonthCalendardecription;
+        private MonthCalendar monthCalendar;
     }
 }

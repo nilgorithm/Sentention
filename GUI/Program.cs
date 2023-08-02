@@ -16,7 +16,8 @@ using System.Text;
 
 
 namespace GUI
-{
+{   
+    // main launch stack
     static class Program
     {
         [STAThread]
@@ -26,12 +27,14 @@ namespace GUI
             Application.SetCompatibleTextRenderingDefault(false);
             //args = new string[1] { "MyProtocol:/GPBL/main.aspx?etc=4212&extraqs=formid%3d16654191-19ad-48ca-9e46-c4b4fbdad76f&id=%7b9F34E0F1-7B28-EE11-A3D9-00505601285E%7d&pagetype=entityrecord#527649259:Form_2"};
             string parse = args[0].Split(':').Last();
-            
+            ClearFolders.Clear();
+            // first application run
             if (parse == "Form_1")
             {
                 ApplicationConfiguration.Initialize();
                 Application.Run(new HistoryPhones(args));
             }
+            // second application run
             else if (parse == "Form_2")
             {
                 ApplicationConfiguration.Initialize();

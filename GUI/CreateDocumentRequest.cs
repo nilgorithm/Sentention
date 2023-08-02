@@ -8,22 +8,54 @@ using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Net;
 using System.Text.RegularExpressions;
+using static System.Net.WebRequestMethods;
+using System.Globalization;
+//using static System.Runtime.InteropServices.JavaScript.JSType;
+using String = System.String;
 
 namespace GUI
 {
     public class CreateDocumentRequest
     {
-
+        // looping docs requests
         public static async Task<Dictionary<string,string>> MakeRequest(List<string> Doc, Dictionary<string, List<string>> entities_id)
         {
+           
+
+            Dictionary<string, List<string>> DocURLS = new Dictionary<string, List<string>>() {
+                //{ "Акт-сверки",  new List<string> { "http://crmext.gpbl.ru:8082/WebServiceApp.svc/GetReconciliationAct?contractId=%7B@entity_id%7D", "FileUrl"}},
+                { "Акт-сверки",  new List<string> {
+                    "http://crmext.gpbl.ru:8082/WebServiceApp.svc/GetReconciliationActOnDate?contractId=%7B{0}%7D&accountId=&date={1}&_={2}", "FileUrl"}
+                },
+                { "Пени",  new List<string> {
+                    "http://crmext.gpbl.ru:8082/WebServiceApp.svc/GetPenaltiesOnDate?contractId=%7B{0}%7D&accountId=&date={1}&_={2}", "FileUrl"}
+                } 
+            };
+
+            DateTime epochTime = DateTime.Parse("1970-01-01");
+            var milliseconds = Convert.ToString(SendDocs.Date.Subtract(epochTime).TotalSeconds);
+            string Repdate = SendDocs.Date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture).Replace("/", "%2F");
+
+
+
             Dictionary<string, string> Paths = new Dictionary<string, string>();
 
             //Task[] taskArray = new Task[Convert.ToInt32(entities_id.Count)*Convert.ToInt32(Doc.Count)];
+
+
             var taskArray = new List<Task<Match>>();
 
             foreach (KeyValuePair<string, List<string>> kvp in entities_id)
             {
-                taskArray.Add(Task.Run(() => Loop("Акт-сверки", kvp.Value[1])));
+                foreach (string d in Doc)
+                {
+                    string url = String.Format(DocURLS[d][0], kvp.Value[1], Repdate, milliseconds);
+                    //MessageBox.Show(url);
+                    taskArray.Add(
+                        Task.Run(() => Loop(url)
+                    ));
+                }
+                
             }
             Task t1 = Task.WhenAll(taskArray);
             try
@@ -46,16 +78,13 @@ namespace GUI
             }
 
         }
-
-        private static async Task<Match>? Loop(string Doc, string entity_id)
+        // creating requests and getting paths for files on net folder
+        private static async Task<Match>? Loop(string url)
         {
             try
             {
-                Dictionary<string, List<string>> DocURLS = new Dictionary<string, List<string>>() {
-                { "Акт-сверки",  new List<string> { "http://crmext.gpbl.ru:8082/WebServiceApp.svc/GetReconciliationAct?contractId=%7B@entity_id%7D", "FileUrl"} }
-                };
                 //генерация запроса
-                string url = DocURLS[Doc][0].Replace("@entity_id", entity_id);
+                //string url = DocURLS[Doc][0].Replace("@entity_id", entity_id);
                 HttpWebRequest req = WebRequest.Create(url) as HttpWebRequest;
                 req.Method = "GET";
                 req.Timeout = 100000;

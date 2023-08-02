@@ -1,3 +1,4 @@
+'application for compilation post form in outlook
 msgTheme = Wscript.Arguments.Item(0)
 msgBody = Wscript.Arguments.Item(1)
 msgRecipe = Wscript.Arguments.Item(2)

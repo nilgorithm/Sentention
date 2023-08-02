@@ -12,6 +12,7 @@ namespace GUI
 {
     static class connectionInfo
     {
+        // public connections
         public static string ProjEnv = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString();
         //public static string ConfigPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString() + "\\files\\config.xml";
         //public static XmlDocument ConfigKeys = Load("Resources/DefaultConfig.xml");
@@ -33,7 +34,7 @@ namespace GUI
 
     static class Decrypter
     {
-
+        // decrypting encrypted strings
         public static string Decrypt(string cypherText)
         {
             var bytesToDecrypt = Convert.FromBase64String(cypherText);
