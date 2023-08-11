@@ -1,23 +1,29 @@
 {
     "name":"SendPhone",
-    "version":"0.2",
+    "version":"0.3",
     "manifest_version":3,
-    "description":"gpbl_extension_for_chrome",
+    "description":"GPBL extension for chrome.",
  
     "content_scripts": [
       {
         "matches": ["http://crm.gpbl.ru/*"],
         "js": ["content.js"],
         "css": ["styles.css"],
-        "run_at": "document_end"
+        "run_at": "document_idle"
       }
     ],
     "permissions":[
         "contextMenus", 
         "tabs"
         ],
+    "web_accessible_resources":[
+      {
+        "resources": ["images/*"],
+        "matches": ["http://crm.gpbl.ru/*"]
+      }
+    ],
     "icons":{
-        "16":"images/get_started16.png",
-        "128":"images/get_started128.png"
+        "16":"images/16.png",
+        "128":"images/128.png"
     }
 }
