@@ -9,6 +9,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using OpenNetFolder;
+using System.Diagnostics;
 
 namespace GUI
 {
@@ -41,13 +42,14 @@ namespace GUI
         private string ParseInput(string[] args)
         {
             string data = args[0].Split(':')[1];
-            string pattern = @"(\w+\d+?[A-Z][^a-z%&_\/]+)";
+            string pattern = @"%7B(\w+\d+?[A-Z][^a-z%&_\/]+)%7D";
 
             //Regex rg = new Regex(pattern);
 
-            Match m = Regex.Match(data, pattern);
-            string res = m.Value.ToString().Replace("7b", "");
-            //MessageBox.Show(res);
+            var m = Regex.Match(data, pattern).Groups[1];
+            string res = m.Value.ToString();
+            
+            //Debug.WriteLine(res);
             //string[] result = Regex.Split(data, pattern,RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500));
             /*foreach (string res in result)
             {

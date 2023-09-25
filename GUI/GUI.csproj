@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <BaseOutputPath>C:\Users\KlychkovMD\GUI</BaseOutputPath>
+    <ApplicationIcon>phone.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="phone.ico" />
     <Content Include="SendMail.vbs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
