@@ -37,9 +37,10 @@ function initialize(obj){
         let frame = document.getElementsByTagName('iframe');
         for (let i = 0; i<frame.length; i++){
             if (frame[i].getAttribute("style").indexOf("visibility: visible") != -1){
-                if(frame[i].contentDocument.body.innerHTML.indexOf('Тип задачи Произвести взыскание ДЗ – КЦ') != -1){
+                if(frame[i].contentDocument.body.innerHTML.indexOf('Контрагент : Сведения') != -1){
                     try{
                         let guid = frame[i].contentWindow.document.getElementById("crmFormSubmitId").value;
+                        console.log(guid)
                         document.location.href = 'Myprotocol:' + document.getElementById("crmContentPanel").getAttribute("src")+":Form_2";
                     }
                     catch{
