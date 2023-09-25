@@ -1,15 +1,15 @@
 import os 
 # r'C:\GUI\OpenNetFolder.exe\",1"'
 # way_1 = r'@="\"C:\\Users\\@client_name\\Desktop\\VisualiseTableProd\\VisualiseTableProd.exe\",1"'
-way_1 = r'@="\"C:\\Users\\KlychkovMD\\GUI\\Release\\net7.0-windows\\GUI.exe\",1"'
+way_1 = r'@="\"C:\\Users\\KlychkovMD\\GUI\\Release\\net7.0-windows\\publish\\win-x64\\GUI.exe\",1"'
 
 # way_1 = r'@="\"C:\\Program Files (x86)\\MooxAgent\\v0.9.29\\x64\\nw.exe\",1 \"--nwapp=C:\\Program Files (x86)\\MooxAgent\\v0.9.29\""'
 # way_1 = r'@="\"C:\\Program Files (x86)\\MooxAgent\\v0.9.29\\x64\\nw.exe\",1"'
 
 
 # way_2 = r'@="\"C:\\Users\\@client_name\\Desktop\\VisualiseTableProd\\VisualiseTableProd.exe\" \"%l\""'
-way_2 = r'@="\"C:\\Users\\KlychkovMD\\GUI\\Release\\net7.0-windows\\GUI.exe\" \"%l\""'
-
+way_2 = r'@="\"C:\\Users\\KlychkovMD\\GUI\\Release\\net7.0-windows\\publish\\win-x64\\GUI.exe\" \"%l\""'
+# C:\Users\KlychkovMD\GUI\Release\net7.0-windows\publish\win-x64\
 # way_2 = r'@="\"C:\\Program Files (x86)\\MooxAgent\\v0.9.29\\x64\\nw.exe\" \"%l\" \"--nwapp=C:\\Program Files (x86)\\MooxAgent\\v0.9.29\""'
 # way_2 = r'@="\"C:\\Program Files (x86)\\MooxAgent\\v0.9.29\\x64\\nw.exe\" \"%l\""'
 # \"--nwapp="\C:\\Program Files (x86)\\MooxAgent\\v0.9.29"\"

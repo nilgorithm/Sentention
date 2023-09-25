@@ -5,11 +5,11 @@ Windows Registry Editor Version 5.00
 "URL Protocol"=""
 
 [HKEY_CLASSES_ROOT\MyProtocol\DefaultIcon]
-@="\"C:\\Users\\KlychkovMD\\GUI\\Release\\net7.0-windows\\GUI.exe\",1"
+@="\"C:\\Users\\KlychkovMD\\GUI\\Release\\net7.0-windows\\publish\\win-x64\\GUI.exe\",1"
 
 [HKEY_CLASSES_ROOT\MyProtocol\shell]
 
 [HKEY_CLASSES_ROOT\MyProtocol\shell\open]
 
 [HKEY_CLASSES_ROOT\MyProtocol\shell\open\command]
-@="\"C:\\Users\\KlychkovMD\\GUI\\Release\\net7.0-windows\\GUI.exe\" \"%l\""
+@="\"C:\\Users\\KlychkovMD\\GUI\\Release\\net7.0-windows\\publish\\win-x64\\GUI.exe\" \"%l\""
