@@ -2,7 +2,7 @@ function BuildButton() {
     let button = document.createElement("span");
     button.setAttribute('class', 'navTabButton');
     button.setAttribute('id', 'send-button');
-    button.setAttribute('title', 'Show Dynamics CRM send button');
+    button.setAttribute('title', 'Create Message Button');
 
 
     let linkElement = document.createElement("a");
@@ -11,13 +11,15 @@ function BuildButton() {
 
     let linkImageContainerElement = document.createElement("span");
     linkImageContainerElement.setAttribute("class", "navTabButtonImageContainer");
+    linkImageContainerElement.setAttribute('style', 'margin-left: auto; margin-right: auto');
 
     let imageElement = document.createElement("img");
     let url_img = chrome.runtime.getURL("images/32_linear.png");
     imageElement.setAttribute("src", url_img);
+    imageElement.setAttribute('style', 'margin-left: auto; margin-right: auto');
 
-    button.setAttribute('style', 'float:left; width:50px; height:50px;cursor:pointer!important');
-    linkElement.setAttribute("style", "float:left; width:50px; height:50px;cursor:pointer!important;text-align:center");
+    button.setAttribute('style', 'float: left; width: 58px; height: 50px; cursor:pointer!important; margin-left: auto; margin-right: auto');
+    linkElement.setAttribute('style', 'float: left; width: 36.99px; height: 50px; cursor:pointer!important; text-align:center; margin-left: auto; margin-right: auto;');
 
     linkImageContainerElement.appendChild(imageElement);
     linkElement.appendChild(linkImageContainerElement);
@@ -55,7 +57,8 @@ function initialize(obj){
 
 // set up the mutation observer
 var observer = new MutationObserver(function (mutations, me) {
-  var obj = document.getElementById('navBar');
+  let obj = document.getElementById('navBar');
+
   if (obj) {
     initialize(obj);
     me.disconnect(); // stop observing

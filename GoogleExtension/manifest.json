@@ -1,20 +1,19 @@
 {
-    "name":"SendPhone",
+    "name":"Dynamics 365 Message Generator",
+    "short_name": "Message Generator",
     "version":"0.3",
     "manifest_version":3,
-    "description":"GPBL extension for chrome.",
+    "description":"GPBL extension for chrome. This extension runs the message generator for Windows.",
  
     "content_scripts": [
       {
         "matches": ["http://crm.gpbl.ru/*"],
         "js": ["content.js"],
-        "css": ["styles.css"],
         "run_at": "document_idle"
       }
     ],
     "permissions":[
-        "contextMenus", 
-        "tabs"
+        "contextMenus"
         ],
     "web_accessible_resources":[
       {
