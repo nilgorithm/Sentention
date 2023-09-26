@@ -42,14 +42,15 @@ namespace GUI
         private string ParseInput(string[] args)
         {
             string data = args[0].Split(':')[1];
-            string pattern = @"%7B(\w+\d+?[A-Z][^a-z%&_\/]+)%7D";
+            //string pattern = @"%7B(\w+\d+?[A-Z][^a-z%&_\/]+)%7D";
 
             //Regex rg = new Regex(pattern);
 
-            var m = Regex.Match(data, pattern).Groups[1];
-            string res = m.Value.ToString();
+            //var m = Regex.Match(data, pattern).Groups[1];
+            //string res = m.Value.ToString();
             
             //Debug.WriteLine(res);
+            Debug.WriteLine(data);
             //string[] result = Regex.Split(data, pattern,RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500));
             /*foreach (string res in result)
             {
@@ -60,7 +61,8 @@ namespace GUI
             {
                 MessageBox.Show(matchedAuthors[count].Value);
             }*/
-            return res;
+            //return res;
+            return data;
         }
 
         private void OpenCRMConnection()
@@ -115,7 +117,7 @@ namespace GUI
             button1.Visible = true;
 
 
-            string firstSqlExp = "select RegardingObjectId, EMailAddress1, EMailAddress2, EMailAddress3 from Task left join Account on Account.AccountId = Task.RegardingObjectId where leasing_taskdescriptionid = '0149E7CA-1424-EB11-A991-005056011895' and ActivityId = '@client'";
+            string firstSqlExp = "select Account.AccountId, EMailAddress1, EMailAddress2, EMailAddress3 from Account where Account.AccountId = '@client'";
             firstSqlExp = firstSqlExp.Replace("@client", Entity);
             System.Data.SqlClient.SqlDataAdapter CRMfirstAdapter = new System.Data.SqlClient.SqlDataAdapter(firstSqlExp, connectionInfo.CRMConnection);
             DataTable RegardingObjId = new DataTable();
@@ -141,7 +143,7 @@ namespace GUI
             }
 
             // 2-ой запрос 
-            string SecondSqlExp = "select leasing_name as \"Договора\", leasing_customeridName as \"Компания\", leasing_contract.leasing_customerid, leasing_contractid from leasing_contract where leasing_contract.statecode = 0 and leasing_percent_of_avanspayment >= 10 and leasing_contract.leasing_customerid in (@client)";
+            string SecondSqlExp = "select leasing_name as \"Договора\", leasing_customeridName as \"Компания\", leasing_contract.leasing_customerid, leasing_contractid, quote.leasing_brendidname + ' ' + quote.leasing_modelidname as \"ПЛ\" from leasing_contract inner join quote with(nolock) on quote.quoteid = leasing_contract.gpbl_actual_quote where leasing_contract.statecode = 0 and leasing_percent_of_avanspayment >= 10 and leasing_contract.leasing_customerid in (@client)";
             SecondSqlExp = SecondSqlExp.Replace("@client", String.Join(",", IdMails.Keys.ToList()));
             System.Data.SqlClient.SqlDataAdapter CRMsecondAdapter = new System.Data.SqlClient.SqlDataAdapter(SecondSqlExp, connectionInfo.CRMConnection);
             DataTable ContractsTable = new DataTable();

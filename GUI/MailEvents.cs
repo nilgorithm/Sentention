@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 using System.Threading;*/
 using System.Diagnostics;
 using OpenNetFolder;
+using Microsoft.Office.Interop.Outlook;
+using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
+using SEx = System.Exception;
+using WApp = System.Windows.Forms.Application;
+
 
 namespace GUI
 {
@@ -32,7 +37,7 @@ namespace GUI
             {
                 processTemp.Start();
             }
-            catch (Exception e)
+            catch (SEx e)
             {
                 throw;
             }
@@ -79,17 +84,36 @@ namespace GUI
                 continue;
             }
             await DiskConnection.Main(args: new string[] { });
+
             Task t2 = Task.Run(() => StartProcess(@"cscript", "//B " + ScriptArgs));
+
             try
             {
                 await t2;
-                Application.Exit();
+                WApp.Exit();
 
             }
-            catch (Exception)
+            catch (SEx)
             {
                 MessageBox.Show("Ошибка 2");
             }
         }
+
+        private static void createMail(bool success, int objectsCount, int pathsCount, DateTime startTime, DateTime endTime, string queryDate)
+        {
+
+            OutlookApp outlookApp = new OutlookApp();
+            MailItem mailItem = (MailItem)outlookApp.CreateItem(OlItemType.olMailItem);
+
+
+            mailItem.Subject = "Specification Paths Update {success}";
+            mailItem.HTMLBody = @$"";
+
+            var a = mailItem.Attachments;
+            
+            mailItem.Recipients.Add("dks@gpbl.ru");
+            mailItem.Send();
+        }
+
     }
 }

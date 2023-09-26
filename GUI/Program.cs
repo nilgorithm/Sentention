@@ -26,7 +26,7 @@ namespace GUI
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //args = new string[1] { "MyProtocol:/GPBL/main.aspx?etc=4212&extraqs=formid%3d16654191-19ad-48ca-9e46-c4b4fbdad76f&id=%7b9F34E0F1-7B28-EE11-A3D9-00505601285E%7d&pagetype=entityrecord#527649259:Form_2"};
-            //args = new string[1] { "myprotocol:%7B9F34E0F1-7B28-EE11-A3D9-00505601285E%7D:Form_2" };
+            args = new string[1] { "myprotocol:DDAF8036-EBFC-EA11-8180-005056019243:Form_2" };
             string parse = args[0].Split(':').Last();
             ClearFolders.Clear();
             // first application run
