@@ -7,7 +7,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>phone.ico</ApplicationIcon>
-    <Version>$(VersionPrefix)1.0.0.1</Version>
+    <Version>$(VersionPrefix)1.0.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
