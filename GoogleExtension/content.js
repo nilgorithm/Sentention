@@ -41,7 +41,7 @@ function initialize(obj){
                     try{
                         let guid = frame[i].contentWindow.document.getElementById("crmFormSubmitId").value;
                         console.log(guid)
-                        document.location.href = 'Myprotocol:' + document.getElementById("crmContentPanel").getAttribute("src")+":Form_2";
+                        document.location.href = 'Myprotocol:' + guid + ":Form_2";
                     }
                     catch{
                         alert("quid не найден!");
