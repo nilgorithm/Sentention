@@ -9,17 +9,18 @@ using System.Threading;*/
 using System.Diagnostics;
 using OpenNetFolder;
 using Microsoft.Office.Interop.Outlook;
-using OutlookApp = Microsoft.Office.Interop.Outlook.Application;
+using Outlook = Microsoft.Office.Interop.Outlook;
 using SEx = System.Exception;
 using WApp = System.Windows.Forms.Application;
-
+//using System.Drawing.Drawing2D;
 
 namespace GUI
 {
     public class MailEvents
     {
+        static string FilePath = connectionInfo.ProjEnv + "\\files\\";
         // run terminal process
-        public static void StartProcess(string ProcType, string ScriptArgs)
+        private static void StartProcess(string ProcType, string ScriptArgs)
         {
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -43,11 +44,11 @@ namespace GUI
             }
         }
         // check all files are in folder
-        static bool AllExisted(List<string> searchFiles, string Fp)
-        { 
+        private static bool AllExisted(List<string> searchFiles, string Fp)
+        {
             foreach (string file in searchFiles)
             {
-                if (File.Exists(Fp + @"\"+ file))
+                if (File.Exists(Fp + @"\" + file))
                 {
                     continue;
                 }
@@ -59,35 +60,97 @@ namespace GUI
             return true;
         }
         // prepair message send 
+        private static List<string> DownloadFiles(Dictionary<string, string> DocPaths)
+        {
+            List<string> AllContractsPaths = new List<string>();
+            foreach (KeyValuePair<string, string> kvp in DocPaths)
+            {
+                if (!string.IsNullOrEmpty(kvp.Key) && !string.IsNullOrEmpty(kvp.Value))
+                {
+                    string command = $@"/k copy ""\\dtc01-sp01.corp.gpbl.ru\DavWWWRoot{kvp.Value}"" ""{FilePath}""";
+                    AllContractsPaths.Add(FilePath + kvp.Key);
+                    Task t1 = Task.Run(() => StartProcess("cmd", command));
+                    t1.Wait();
+                }
+            }
+            return AllContractsPaths;
+        }
+
+        private static void DownloadFile(string netpath){
+            string command = $@"/k copy ""\\dtc01-sp01.corp.gpbl.ru\DavWWWRoot{netpath}"" ""{FilePath}""";
+            Task t1 = Task.Run(() => StartProcess("cmd", command));
+            t1.Wait();
+        }
+
         async public static void SendMail(string Theme, string Body, string Recepient)
         {
-            string FilesPath = connectionInfo.ProjEnv + "\\files\\";
-            Directory.CreateDirectory(FilesPath);
-
-            List<string> AllContractsPaths = new List<string>();
-
-            foreach(KeyValuePair<string, string> kvp in SendDocs.DocPaths)
-            {
-                string command = $@"/k copy ""\\dtc01-sp01.corp.gpbl.ru\DavWWWRoot{kvp.Value}"" ""{FilesPath}""";
-                AllContractsPaths.Add(FilesPath + kvp.Key);
-                Task t1 = Task.Run(() => StartProcess("cmd", command));
-                t1.Wait();
-                
-            }
-            string ScriptArgs = $"\"{connectionInfo.ProjEnv}\\SendMail.vbs\" \"{Theme}\"  \"{Body}\" \"{Recepient}\" \"{String.Join(",", AllContractsPaths)}\"";
-            //MessageBox.Show(ScriptArgs);
+            //Directory.CreateDirectory(FilesPath);
+            List<string> AllContractsPaths = DownloadFiles(SendDocs.DocPaths);
+            //Dictionary<string, string> PastCommands = new Dictionary<string, string>();
+            
             var c = 0;
-            while (!AllExisted(SendDocs.DocPaths.Keys.ToList(), FilesPath) && c < 100)
+            Debug.WriteLine(string.Join("\n", SendDocs.DocPaths.Keys.ToArray()));
+            while (!AllExisted(SendDocs.DocPaths.Keys.ToList(), FilePath) && c < 10)
             {
                 c += 1;
                 Thread.Sleep(1000);
+                //var not_existed_fies = AllContractsPaths.Where(f => !File.Exists(f)).ToArray();
+                Debug.WriteLine(string.Join("\n", AllContractsPaths));
+                Debug.WriteLine("search");
+                foreach (string f in AllContractsPaths) {
+                    Debug.WriteLine(f.Split("\\").Last());
+                    if (!File.Exists(f)) {
+                        Debug.WriteLine(SendDocs.DocPaths[f.Split("\\").Last()]);
+                        DownloadFile(netpath: SendDocs.DocPaths[f.Split("\\").Last()]);
+                    }
+                    else {
+                        Debug.WriteLine("EXISTES");
+                    }
+                }
                 continue;
             }
             await DiskConnection.Main(args: new string[] { });
-
-            Task t2 = Task.Run(() => StartProcess(@"cscript", "//B " + ScriptArgs));
+            Debug.WriteLine(string.Join("\n&&", AllContractsPaths.Where(f => File.Exists(f)).ToArray()));
+            //string ScriptArgs = $"\"{connectionInfo.ProjEnv}\\SendMail.vbs\" \"{Theme}\"  \"{Body}\" \"{Recepient}\" \"{String.Join(",", AllContractsPaths.Where(f => File.Exists(f)).ToArray())}\"";
+            //Debug.WriteLine(ScriptArgs);
+            //Task t2 = Task.Run(() => StartProcess("cscript", "//B " + ScriptArgs));
+            //Task t2 = Task.Run(() => createMail(theme: Theme, body:Body, recepient: Recepient, apaths: AllContractsPaths.Where(f => File.Exists(f)).ToList()));
+            //createMail(theme: Theme, body:Body, recepient: Recepient, apaths: AllContractsPaths.Where(f => File.Exists(f)).ToList());
 
             try
+            {
+                Outlook.Application oApp = new Outlook.Application();
+                Outlook.MailItem oMsg = (Outlook.MailItem)oApp.CreateItem(Outlook.OlItemType.olMailItem);
+                oMsg.HTMLBody = Body;
+                foreach (string path in AllContractsPaths)
+                {
+                    Outlook.Attachment oAttach = oMsg.Attachments.Add(path);
+                }
+                oMsg.Subject = Theme;
+                oMsg.Recipients.Add(Recepient);
+                ((Outlook._MailItem)oMsg).Display();
+                WApp.Exit();
+
+                /*MailMessage message = new MailMessage();
+
+                // Set subject of the message, body and sender information
+                message.Subject = "New message created by Aspose.Email for .NET";
+                message.Body = "This is the body of the email.";
+
+                // Add To recipients and CC recipients
+                message.To.Add(new MailAddress("to1@domain.com", "Recipient 1", false));
+
+                // Add attachments
+                message.Attachments.Add(new Attachment(AllContractsPaths[0]));*/
+
+
+            }
+            catch (SEx exc)
+            {
+                Debug.WriteLine(exc.Message);
+            }
+
+           /* try
             {
                 await t2;
                 WApp.Exit();
@@ -96,23 +159,7 @@ namespace GUI
             catch (SEx)
             {
                 MessageBox.Show("Ошибка 2");
-            }
-        }
-
-        private static void createMail(bool success, int objectsCount, int pathsCount, DateTime startTime, DateTime endTime, string queryDate)
-        {
-
-            OutlookApp outlookApp = new OutlookApp();
-            MailItem mailItem = (MailItem)outlookApp.CreateItem(OlItemType.olMailItem);
-
-
-            mailItem.Subject = "Specification Paths Update {success}";
-            mailItem.HTMLBody = @$"";
-
-            var a = mailItem.Attachments;
-            
-            mailItem.Recipients.Add("dks@gpbl.ru");
-            mailItem.Send();
+            }*/
         }
 
     }

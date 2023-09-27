@@ -37,6 +37,7 @@ namespace GUI
             this.StartPosition = FormStartPosition.Manual;
             OpenCRMConnection();
             this.Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - this.Width, Screen.PrimaryScreen.WorkingArea.Height - this.Height);
+            installUpdater();
         }
 
         private string ParseInput(string[] args)
@@ -48,7 +49,7 @@ namespace GUI
 
             //var m = Regex.Match(data, pattern).Groups[1];
             //string res = m.Value.ToString();
-            
+
             //Debug.WriteLine(res);
             Debug.WriteLine(data);
             //string[] result = Regex.Split(data, pattern,RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500));
@@ -106,11 +107,7 @@ namespace GUI
 
         private void MainLoad()
         {
-
-
             //MessageBox.Show(await CreateDocumentRequest.MakeRequest(TypeOfDocs[0], entity));
-
-
 
             dataGridView1.Visible = true;
             button1.Enabled = true;
@@ -171,6 +168,7 @@ namespace GUI
             dataGridView1.DataSource = ContractsTable;
             dataGridView1.Columns[1].Width = 110;
             dataGridView1.Columns[2].Width = 140;
+            dataGridView1.Columns[3].Width = 140;
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -185,6 +183,7 @@ namespace GUI
                 bool isSelected = Convert.ToBoolean(row.Cells["checkBoxColumn"].Value);
                 if (isSelected)
                 {
+                    //Debug.WriteLine(isSelected);
                     string IterCompany = row.Cells["Компания"].Value.ToString();
                     string IterContract = row.Cells["Договора"].Value.ToString();
 
@@ -215,7 +214,9 @@ namespace GUI
                 button2.Visible = true;
 
                 await DiskConnection.Main(args: new string[1] { connectionInfo.NetFolderCredentials });
-                DocPaths = await CreateDocumentRequest.MakeRequest(DocTypes, Contracts);
+                //Debug.WriteLine(string.Join(", ",Contracts.Keys.ToArray()));
+
+                DocPaths = await CreateDocumentRequest.MakeRequest(DocTypes, Contracts, SelectedContracts);
 
 
                 pictureBox1.Visible = false;
@@ -223,7 +224,7 @@ namespace GUI
                 dataGridView1.Visible = true;
                 dataGridView1.DataSource = GetMails(ContractsIds);
                 dataGridView1.Columns[0].Width = 50;
-                dataGridView1.Columns[1].Width = 250;
+                dataGridView1.Columns[1].Width = 420;
 
                 button2.Enabled = true;
             }
@@ -262,13 +263,19 @@ namespace GUI
 
                 if (SelectedContracts.Count > 1)
                 {
-                    string mail = $"{Greetings} {Perenos} Направляем Вам акты - сверки по договорам лизинга: {MaiL} </B></b></H3><b></b> (см.вложение). {Perenos} <p> {End} </p>";
-                    MailEvents.SendMail($"Акты-сверки для «{String.Join(", ", SelectedCompanies.Distinct())}» от ООО Газпромбанк Автолизинг", mail, String.Join(";", MailList));
+                    string mail = $"{Greetings} {Perenos} Направляем Вам {string.Join(", ", DocTypes.ToArray())} по договорам лизинга: {MaiL} </B></b></H3><b></b> (см.вложение). {Perenos} <p> {End} </p>";
+                    pictureBox1.Visible = true;
+                    Task.Run(() =>
+                    MailEvents.SendMail($"{string.Join(", ", DocTypes.ToArray())} для «{String.Join(", ", SelectedCompanies.Distinct())}» от ООО Газпромбанк Автолизинг", mail, String.Join(";", MailList))
+                    );
                 }
                 else
                 {
-                    string mail = $"{Greetings} {Perenos} Направляем Вам акт - сверки по договору лизинга: {MaiL} </B></b></H3><b></b> (см.вложение). {Perenos} <p> {End} </p>";
-                    MailEvents.SendMail($"Акт-сверки для «{String.Join(", ", SelectedCompanies.Distinct())}» от ООО Газпромбанк Автолизинг", mail, String.Join(";", MailList));
+                    string mail = $"{Greetings} {Perenos} Направляем Вам {string.Join(", ", DocTypes.ToArray())} по договору лизинга: {MaiL} </B></b></H3><b></b> (см.вложение). {Perenos} <p> {End} </p>";
+                    pictureBox1.Visible = true;
+                    Task.Run(() =>
+                    MailEvents.SendMail($"{string.Join(", ", DocTypes.ToArray())} для «{String.Join(", ", SelectedCompanies.Distinct())}» от ООО Газпромбанк Автолизинг", mail, String.Join(";", MailList))
+                    );
                 }
             }
             else
@@ -279,35 +286,35 @@ namespace GUI
 
         private void button3_Click(object sender, EventArgs e)
         {
-            DocTypes = DocsCheckList.CheckedItems.Cast<string>().ToList();
-            //Date = monthCalendar.SelectionStart.ToShortDateString();
+            //DocTypes = DocsCheckList.CheckedItems.Cast<string>().ToList();
+            CheckVersionPO();
+            Debug.WriteLine(String.Format("#{0}#", Application.ProductName));
             Date = monthCalendar.SelectionStart;
-            //MessageBox.Show(Date.ToShortDateString());
-            //DocTypes = new List<string> { "Акт-сверки" };
-
-            //List<string> selectedValues = checkedListBox1.Items.Cast<ListItem>().Where(li => li.Selected).Select(li => li.Value).ToList();
-            //MessageBox.Show(String.Join(" ", DocsCheckList.CheckedItems.Cast<string>().ToList()));
-
-            if (DocTypes.Count > 0)
+            if (radioButton1.Checked)
             {
-                button3.Enabled = false;
-                button3.Visible = false;
-                monthCalendar.Visible = false;
-                DocsCheckList.Visible = false;
-                LbDocsCheckListDescription.Visible = false;
-                LbDocsCheckListShowSelected.Visible = false;
-                LbMonthCalendarShowSelected.Visible = false;
-                LbMonthCalendardecription.Visible = false;
-                MainLoad();
-
-
+                DocTypes.Add("Акт-сверки");
+            }
+            else if (radioButton2.Checked)
+            {
+                DocTypes.Add("Cчет на пени");
             }
             else
             {
                 MessageBox.Show("Отсутствует выбор");
+                return;
             }
+            button3.Enabled = false;
+            button3.Visible = false;
+            monthCalendar.Visible = false;
+            //DocsCheckList.Visible = false;
+            radioButton1.Visible = false;
+            radioButton2.Visible = false;
+            LbDocsCheckListDescription.Visible = false;
+            LbDocsCheckListShowSelected.Visible = false;
+            LbMonthCalendarShowSelected.Visible = false;
+            LbMonthCalendardecription.Visible = false;
+            MainLoad();
         }
-
 
         private void monthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
         {
@@ -316,7 +323,79 @@ namespace GUI
 
         private void DocsCheckList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LbDocsCheckListShowSelected.Text = String.Format("Вы выбрали: {0}", String.Join(", ", DocsCheckList.CheckedItems.Cast<string>().ToList()));
+            //LbDocsCheckListShowSelected.Text = String.Format("Вы выбрали: {0}", String.Join(", ", DocsCheckList.CheckedItems.Cast<string>().ToList()));
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            LbDocsCheckListShowSelected.Text = String.Format("Вы выбрали: {0}", radioButton1.Text);
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            LbDocsCheckListShowSelected.Text = String.Format("Вы выбрали: {0}", radioButton2.Text);
+        }
+
+        private static void installUpdater()
+        {
+            try
+            {
+                string curFile = @"C:\Users\@user\AppData\Roaming\ProgramUpdater\ProgramUpdater.exe".Replace("@user", Environment.UserName.ToString());
+                if (!File.Exists(curFile))
+                {
+                    Directory.CreateDirectory(@"C:\Users\@user\AppData\Roaming\ProgramUpdater".Replace("@user", Environment.UserName.ToString()));
+                    //Объявляем переменную с путем к обновленной версии
+                    //Создаем подключение
+                    string DKSConnectionString = "Data Source=DTC01-SQLTST01\\TEST;Initial Catalog = klecov;User ID=kmpl;Password = 6fR2zvmf5TSp?SG;MultipleActiveResultSets = True";
+
+                    System.Data.SqlClient.SqlConnection DKSConnection = new System.Data.SqlClient.SqlConnection(DKSConnectionString);
+                    DKSConnection.Open();
+
+                    string newVersionPath = string.Empty;
+
+                    //Получаем путь к актуальной версии ПО
+                    System.Data.SqlClient.SqlCommand GetPathCMD = DKSConnection.CreateCommand();
+
+                    GetPathCMD.CommandText = "SELECT ProductPath FROM klecov.dbo.DKSProjectsVersions WHERE ProductName = '@programName'".Replace("@programName", "ProgramUpdater");
+
+                    newVersionPath = GetPathCMD.ExecuteScalar().ToString();
+
+                    //Объявляем массив со всеми файлами в папке с обновленной версией
+                    string[] newVersionFilePaths = Directory.GetFiles(newVersionPath);
+
+                    //Перебираем все файлы
+                    foreach (var newVersionFileName in newVersionFilePaths)
+                    {
+                        //Копируем файлы в путь, переданный в данный метод
+                        File.Copy(newVersionFileName.ToString(), @"C:\Users\@user\AppData\Roaming\ProgramUpdater\".Replace("@user", Environment.UserName.ToString()) + newVersionFileName.ToString().Replace(newVersionPath, ""), true);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+        private void CheckVersionPO()
+        {
+            string? SoftwareVersion = new SqlExecuter(query: Queries.ActualProductVersion, Replacement: string.Empty).ReturnStrRes();
+            //Debug.WriteLine(SoftwareVersion);
+            
+            //Debug.WriteLine(SoftwareVersion);
+            if (System.Windows.Forms.Application.ProductVersion.ToString() != SoftwareVersion)
+            {
+                Process proc = new Process();
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.RedirectStandardOutput = false;
+                proc.StartInfo.FileName = @"C:\Users\@user\AppData\Roaming\ProgramUpdater\ProgramUpdater.exe".Replace("@user", Environment.UserName.ToString());
+                proc.StartInfo.Arguments = "@path @program".Replace("@path", Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString()).Replace("@program", Application.ProductName.ToString());
+                proc.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+                proc.Start();
+                Application.Exit();
+                Application.Exit();
+
+            }
         }
     }
+
 }

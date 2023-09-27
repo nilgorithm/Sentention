@@ -40,7 +40,7 @@ namespace GUI
             var bytesToDecrypt = Convert.FromBase64String(cypherText);
             using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
             {
-                
+
 
                 TextReader reader = new StreamReader(connectionInfo.ConfigPath);
                 //TextReader reader = new XmlReader(connectionInfo.ConfigKeys);

@@ -40,6 +40,8 @@
             LbDocsCheckListShowSelected = new Label();
             LbMonthCalendardecription = new Label();
             monthCalendar = new MonthCalendar();
+            radioButton1 = new RadioButton();
+            radioButton2 = new RadioButton();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -51,7 +53,7 @@
             dataGridView1.Location = new Point(0, 0);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowTemplate.Height = 25;
-            dataGridView1.Size = new Size(327, 247);
+            dataGridView1.Size = new Size(501, 247);
             dataGridView1.TabIndex = 0;
             dataGridView1.Visible = false;
             // 
@@ -59,17 +61,18 @@
             // 
             DocsCheckList.CheckOnClick = true;
             DocsCheckList.FormattingEnabled = true;
-            DocsCheckList.Items.AddRange(new object[] { "Акт-сверки", "Пени" });
+            DocsCheckList.Items.AddRange(new object[] { "Акт-сверки", "Cчет на пени" });
             DocsCheckList.Location = new Point(0, 17);
             DocsCheckList.Name = "DocsCheckList";
-            DocsCheckList.Size = new Size(327, 238);
+            DocsCheckList.Size = new Size(295, 238);
             DocsCheckList.TabIndex = 1;
+            DocsCheckList.Visible = false;
             DocsCheckList.SelectedIndexChanged += DocsCheckList_SelectedIndexChanged;
             // 
             // button1
             // 
             button1.Enabled = false;
-            button1.Location = new Point(354, 12);
+            button1.Location = new Point(507, 7);
             button1.Name = "button1";
             button1.Size = new Size(85, 42);
             button1.TabIndex = 2;
@@ -81,7 +84,7 @@
             // button2
             // 
             button2.Enabled = false;
-            button2.Location = new Point(354, 13);
+            button2.Location = new Point(507, 6);
             button2.Name = "button2";
             button2.Size = new Size(85, 40);
             button2.TabIndex = 3;
@@ -92,7 +95,7 @@
             // 
             // button3
             // 
-            button3.Location = new Point(354, 11);
+            button3.Location = new Point(507, 6);
             button3.Name = "button3";
             button3.Size = new Size(85, 43);
             button3.TabIndex = 4;
@@ -133,7 +136,7 @@
             // LbDocsCheckListShowSelected
             // 
             LbDocsCheckListShowSelected.AutoSize = true;
-            LbDocsCheckListShowSelected.BackColor = Color.White;
+            LbDocsCheckListShowSelected.BackColor = SystemColors.Control;
             LbDocsCheckListShowSelected.Location = new Point(0, 55);
             LbDocsCheckListShowSelected.Name = "LbDocsCheckListShowSelected";
             LbDocsCheckListShowSelected.Size = new Size(78, 15);
@@ -143,7 +146,7 @@
             // LbMonthCalendardecription
             // 
             LbMonthCalendardecription.AutoSize = true;
-            LbMonthCalendardecription.BackColor = SystemColors.Window;
+            LbMonthCalendardecription.BackColor = SystemColors.Control;
             LbMonthCalendardecription.Location = new Point(0, 81);
             LbMonthCalendardecription.Name = "LbMonthCalendardecription";
             LbMonthCalendardecription.Size = new Size(221, 15);
@@ -157,11 +160,37 @@
             monthCalendar.TabIndex = 8;
             monthCalendar.DateChanged += monthCalendar1_DateChanged;
             // 
+            // radioButton1
+            // 
+            radioButton1.AutoSize = true;
+            radioButton1.Location = new Point(0, 17);
+            radioButton1.Name = "radioButton1";
+            radioButton1.Size = new Size(87, 19);
+            radioButton1.TabIndex = 11;
+            radioButton1.TabStop = true;
+            radioButton1.Text = "Акт-сверки";
+            radioButton1.UseVisualStyleBackColor = true;
+            radioButton1.CheckedChanged += radioButton1_CheckedChanged;
+            // 
+            // radioButton2
+            // 
+            radioButton2.AutoSize = true;
+            radioButton2.Location = new Point(0, 35);
+            radioButton2.Name = "radioButton2";
+            radioButton2.Size = new Size(97, 19);
+            radioButton2.TabIndex = 12;
+            radioButton2.TabStop = true;
+            radioButton2.Text = "Cчет на пени";
+            radioButton2.UseVisualStyleBackColor = true;
+            radioButton2.CheckedChanged += radioButton2_CheckedChanged;
+            // 
             // SendDocs
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(453, 284);
+            ClientSize = new Size(600, 284);
+            Controls.Add(radioButton2);
+            Controls.Add(radioButton1);
             Controls.Add(LbMonthCalendardecription);
             Controls.Add(LbDocsCheckListShowSelected);
             Controls.Add(LbMonthCalendarShowSelected);
@@ -196,5 +225,7 @@
         private Label LbDocsCheckListShowSelected;
         private Label LbMonthCalendardecription;
         private MonthCalendar monthCalendar;
+        private RadioButton radioButton1;
+        private RadioButton radioButton2;
     }
 }

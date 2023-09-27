@@ -12,13 +12,15 @@ using static System.Net.WebRequestMethods;
 using System.Globalization;
 //using static System.Runtime.InteropServices.JavaScript.JSType;
 using String = System.String;
+using System.Diagnostics;
+using System.Net.WebSockets;
 
 namespace GUI
 {
     public class CreateDocumentRequest
     {
         // looping docs requests
-        public static async Task<Dictionary<string,string>> MakeRequest(List<string> Doc, Dictionary<string, List<string>> entities_id)
+        public static async Task<Dictionary<string,string>> MakeRequest(List<string> Doc, Dictionary<string, List<string>> entities_id, List<string> selected)
         {
            
 
@@ -27,7 +29,7 @@ namespace GUI
                 { "Акт-сверки",  new List<string> {
                     "http://crmext.gpbl.ru:8082/WebServiceApp.svc/GetReconciliationActOnDate?contractId=%7B{0}%7D&accountId=&date={1}&_={2}", "FileUrl"}
                 },
-                { "Пени",  new List<string> {
+                { "Cчет на пени",  new List<string> {
                     "http://crmext.gpbl.ru:8082/WebServiceApp.svc/GetPenaltiesOnDate?contractId=%7B{0}%7D&accountId=&date={1}&_={2}", "FileUrl"}
                 } 
             };
@@ -35,8 +37,6 @@ namespace GUI
             DateTime epochTime = DateTime.Parse("1970-01-01");
             var milliseconds = Convert.ToString(SendDocs.Date.Subtract(epochTime).TotalSeconds);
             string Repdate = SendDocs.Date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture).Replace("/", "%2F");
-
-
 
             Dictionary<string, string> Paths = new Dictionary<string, string>();
 
@@ -49,11 +49,15 @@ namespace GUI
             {
                 foreach (string d in Doc)
                 {
-                    string url = String.Format(DocURLS[d][0], kvp.Value[1], Repdate, milliseconds);
-                    //MessageBox.Show(url);
-                    taskArray.Add(
-                        Task.Run(() => Loop(url)
-                    ));
+                    //Debug.WriteLine(d);
+                    //Debug.WriteLine(kvp.Key);
+                    if (selected.Contains(kvp.Key)) {
+                        string url = String.Format(DocURLS[d][0], kvp.Value[1], Repdate, milliseconds);
+                        //MessageBox.Show(url);
+                        taskArray.Add(
+                            Task.Run(() => Loop(url)
+                        ));
+                    }
                 }
                 
             }
@@ -62,12 +66,11 @@ namespace GUI
             {
                 await t1;
                 taskArray.ForEach(tk => {
-                    if (tk != null)
+                    var k = tk.Result.Groups[tk.Result.Groups.Count - 1].ToString(); //key: name of pdf
+                    var v = tk.Result.Value.Replace(@"/", @"\"); //value: alternative way to pdf 
+                    if (tk != null && !string.IsNullOrEmpty(k) && !string.IsNullOrEmpty(v))
                     {
-                        Paths.Add(
-                        tk.Result.Groups[tk.Result.Groups.Count - 1].ToString(), //key: name of pdf
-                        tk.Result.Value.Replace(@"/", @"\") //value: alternative way to pdf 
-                            );
+                        Paths.Add(k, v);
                     }}
                 );
                 return Paths;
@@ -97,6 +100,7 @@ namespace GUI
                 string StringSr = sr.ReadToEnd();
                 JObject o = JObject.Parse(StringSr);
                 string? link = Convert.ToString(o["FileUrl"]);
+                //Debug.WriteLine(link);
                 string pattern = @"/(\w+)/([А-Я0-9\-]+)/(.*)";
                 Match matchres = Regex.Match(link, pattern);
                 return matchres;
