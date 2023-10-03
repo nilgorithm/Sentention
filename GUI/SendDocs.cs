@@ -42,16 +42,19 @@ namespace GUI
 
         private string ParseInput(string[] args)
         {
+            
             string data = args[0].Split(':')[1];
             //string pattern = @"%7B(\w+\d+?[A-Z][^a-z%&_\/]+)%7D";
+            string pattern = @"%7B(.*)%7D";
 
             //Regex rg = new Regex(pattern);
 
-            //var m = Regex.Match(data, pattern).Groups[1];
-            //string res = m.Value.ToString();
+            var m = Regex.Match(data, pattern).Groups[1];
+            string res = m.Value.ToString();
+            //MessageBox.Show(res);
 
             //Debug.WriteLine(res);
-            Debug.WriteLine(data);
+            //Debug.WriteLine(data);
             //string[] result = Regex.Split(data, pattern,RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(500));
             /*foreach (string res in result)
             {
@@ -63,7 +66,7 @@ namespace GUI
                 MessageBox.Show(matchedAuthors[count].Value);
             }*/
             //return res;
-            return data;
+            return res;
         }
 
         private void OpenCRMConnection()
@@ -168,7 +171,7 @@ namespace GUI
             dataGridView1.DataSource = ContractsTable;
             dataGridView1.Columns[1].Width = 110;
             dataGridView1.Columns[2].Width = 140;
-            dataGridView1.Columns[3].Width = 140;
+            dataGridView1.Columns[3].Width = 160;
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -288,7 +291,7 @@ namespace GUI
         {
             //DocTypes = DocsCheckList.CheckedItems.Cast<string>().ToList();
             CheckVersionPO();
-            Debug.WriteLine(String.Format("#{0}#", Application.ProductName));
+            //Debug.WriteLine(String.Format("#{0}#", Application.ProductName));
             Date = monthCalendar.SelectionStart;
             if (radioButton1.Checked)
             {

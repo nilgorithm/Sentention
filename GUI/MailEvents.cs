@@ -89,28 +89,28 @@ namespace GUI
             //Dictionary<string, string> PastCommands = new Dictionary<string, string>();
             
             var c = 0;
-            Debug.WriteLine(string.Join("\n", SendDocs.DocPaths.Keys.ToArray()));
+            //Debug.WriteLine(string.Join("\n", SendDocs.DocPaths.Keys.ToArray()));
             while (!AllExisted(SendDocs.DocPaths.Keys.ToList(), FilePath) && c < 10)
             {
                 c += 1;
                 Thread.Sleep(1000);
                 //var not_existed_fies = AllContractsPaths.Where(f => !File.Exists(f)).ToArray();
-                Debug.WriteLine(string.Join("\n", AllContractsPaths));
-                Debug.WriteLine("search");
+                //Debug.WriteLine(string.Join("\n", AllContractsPaths));
+                //Debug.WriteLine("search");
                 foreach (string f in AllContractsPaths) {
-                    Debug.WriteLine(f.Split("\\").Last());
+                    //Debug.WriteLine(f.Split("\\").Last());
                     if (!File.Exists(f)) {
-                        Debug.WriteLine(SendDocs.DocPaths[f.Split("\\").Last()]);
+                        //Debug.WriteLine(SendDocs.DocPaths[f.Split("\\").Last()]);
                         DownloadFile(netpath: SendDocs.DocPaths[f.Split("\\").Last()]);
                     }
                     else {
-                        Debug.WriteLine("EXISTES");
+                        //Debug.WriteLine("EXISTES");
                     }
                 }
                 continue;
             }
             await DiskConnection.Main(args: new string[] { });
-            Debug.WriteLine(string.Join("\n&&", AllContractsPaths.Where(f => File.Exists(f)).ToArray()));
+            //Debug.WriteLine(string.Join("\n&&", AllContractsPaths.Where(f => File.Exists(f)).Select(f => f).ToArray()));
             //string ScriptArgs = $"\"{connectionInfo.ProjEnv}\\SendMail.vbs\" \"{Theme}\"  \"{Body}\" \"{Recepient}\" \"{String.Join(",", AllContractsPaths.Where(f => File.Exists(f)).ToArray())}\"";
             //Debug.WriteLine(ScriptArgs);
             //Task t2 = Task.Run(() => StartProcess("cscript", "//B " + ScriptArgs));
@@ -122,7 +122,7 @@ namespace GUI
                 Outlook.Application oApp = new Outlook.Application();
                 Outlook.MailItem oMsg = (Outlook.MailItem)oApp.CreateItem(Outlook.OlItemType.olMailItem);
                 oMsg.HTMLBody = Body;
-                foreach (string path in AllContractsPaths)
+                foreach (string path in AllContractsPaths.Where(f => File.Exists(f)))
                 {
                     Outlook.Attachment oAttach = oMsg.Attachments.Add(path);
                 }

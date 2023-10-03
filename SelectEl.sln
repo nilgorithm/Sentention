@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenNetFolder", "OpenNetFolder\OpenNetFolder.csproj", "{BA63EF3C-D335-417C-8295-242924D2A1CF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GUI", "GUI\GUI.csproj", "{FADBBEBB-5E6F-497C-B6FB-8C16F29BC96D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisualiseTableProd", "GUI\VisualiseTableProd.csproj", "{FADBBEBB-5E6F-497C-B6FB-8C16F29BC96D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
